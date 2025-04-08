@@ -1,0 +1,20 @@
+{
+	"request": "login",
+	"user":
+	{
+		"username": "sander"
+	}
+}
+{
+	"response": "login",
+	"users":["username1", "username2", "etc."]
+}
+
+{
+	"request": "message",
+	"recipient":
+	{
+		"username": "per"
+	},
+	"payload": "Hei Per"
+}
