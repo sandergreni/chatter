@@ -5,6 +5,15 @@ use chrono::Local;
 use json::JsonValue;
 use std::collections::HashMap;
 use std::os::fd::RawFd;
+use clap::Parser;
+
+#[derive(Parser, Default, Debug)]
+#[command(version, about, long_about = None)]
+struct Args
+{
+    #[arg(short, long, default_value_t = 4242)]
+    port: u16,
+}
 
 fn parse_json(buffer: &str) -> Option<JsonValue>
 {
@@ -142,8 +151,11 @@ impl UserConnections
 
 fn main()
 {
+    let args = Args::parse();
+
     let mut users = UserConnections::new();
     let mut epoller = Epoller::new(
+        args.port,
         |connection_id, input|
         {
             match String::from_utf8(input)

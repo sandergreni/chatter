@@ -108,15 +108,22 @@ where Func: FnMut(RawFd, Vec<u8>) -> (RawFd, String)
 impl<Func> Epoller<Func>
 where Func: FnMut(RawFd, Vec<u8>) -> (RawFd, String)
 {
-	pub fn new(cb: Func) -> Self
+	pub fn new(port: u16, cb: Func) -> Self
 	{
+		if port > u16::MAX
+		{
+			panic!("Invalid port number");
+		}
+
 		let fd: RawFd = match syscall!(epoll_create1(libc::EPOLL_CLOEXEC))
 		{
 			Ok(res) => res,
 			Err(error) => panic!("Unable to create Epoller: {:#?}", error),
 		};
 
-		let listener: TcpListener = match TcpListener::bind("0.0.0.0:4242")
+		let addr = "0.0.0.0:".to_owned() + &port.to_string();
+
+		let listener: TcpListener = match TcpListener::bind(addr)
 		{
 			Ok(res) =>
 			{
