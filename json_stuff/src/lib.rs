@@ -2,19 +2,19 @@
 pub mod json_stuff
 {
     use std::{collections::HashMap, os::fd::RawFd};
-
+    use chrono;
     use json::JsonValue;
 
     pub fn parse_json(buffer: &str) -> Option<JsonValue>
     {
-        //log_it!("recv", buffer);
+        common::log_it!("recv", buffer);
 
         match json::parse(buffer)
         {
             Ok(parsed) => Some(parsed),
-            Err(_) =>
+            Err(error) =>
             {
-                //log_it!(error, buffer);
+                common::log_it!(error, buffer);
                 None
             }
         }
