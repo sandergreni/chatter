@@ -1,11 +1,12 @@
 
+use json_stuff::json_stuff;
 use cs_server::epoller::Epoller;
 use cs_server::log_it;
 use chrono::Local;
+use clap::Parser;
 use json::JsonValue;
 use std::collections::HashMap;
 use std::os::fd::RawFd;
-use clap::Parser;
 
 #[derive(Parser, Default, Debug)]
 #[command(version, about, long_about = None)]
@@ -13,21 +14,6 @@ struct Args
 {
     #[arg(short, long, default_value_t = 4242)]
     port: u16,
-}
-
-fn parse_json(buffer: &str) -> Option<JsonValue>
-{
-    log_it!("recv", buffer);
-
-    match json::parse(buffer)
-    {
-        Ok(parsed) => Some(parsed),
-        Err(error) =>
-        {
-            log_it!(error, buffer);
-            None
-        }
-    }
 }
 
 fn strip_crlf(input: &mut String)
@@ -40,17 +26,6 @@ fn strip_crlf(input: &mut String)
             input.pop();
         }
     }
-}
-
-fn get_username(json: & JsonValue, parent: &str) -> Result<String, &'static str>
-{   
-    if json[parent].is_object()
-    {
-        let user = &json[parent];
-        return Ok(user["username"].to_string());
-    }
-
-    Err("Invalid JSON, cannot find username")
 }
 
 struct UserConnections
@@ -67,10 +42,9 @@ impl UserConnections
 
     pub fn handle_request(&mut self, json: JsonValue, connection_id: RawFd) -> (RawFd, String)
     {
-        let key = "request";
-        if let Some(req_code) = json[key].as_str()
+        if let Ok(req_code) = json_stuff::get_request_code(&json)
         {
-            let ret = match req_code
+            let ret = match req_code.as_str()
             {
                 "login" => self.handle_login(json, connection_id),
                 "message" => self.handle_message(json, connection_id),
@@ -87,30 +61,15 @@ impl UserConnections
         (connection_id, "Unable to parse JSON".to_string())
     }
 
-    fn get_login_response(&self) -> Result<String, json::JsonError>
-    {
-        let mut users_arr = json::JsonValue::new_array();
-        for (username, _fd) in &self.users
-        {
-            users_arr.push(username.as_str())?;
-        }
-
-        let mut json = json::JsonValue::new_object();
-        json.insert("response", "login")?;
-        json.insert("users", users_arr)?;
-
-        Ok(json.dump())
-    }
-
     fn handle_login(&mut self, json: JsonValue, connection_id: RawFd) -> (RawFd, String)
     {
         let mut ret: (RawFd, String) = (connection_id, String::new());
-        match get_username(&json, "user")
+        match json_stuff::get_username(&json, "user")
         {
             Ok(username) =>
             {
                 self.users.insert(username.to_string(), connection_id);
-                ret.1 = match self.get_login_response()
+                ret.1 = match json_stuff::get_login_response(&self.users)
                 {
                     Ok(response) => response,
                     Err(error) => format!("Unable to generate JSON for login response: {:#?}", error)
@@ -125,7 +84,7 @@ impl UserConnections
     fn handle_message(&mut self, json: JsonValue, connection_id: RawFd) -> (RawFd, String)
     {
         let mut ret: (RawFd, String) = (connection_id, String::new());
-        match get_username(&json, "recipient")
+        match json_stuff::get_username(&json, "recipient")
         {
             Ok(username) =>
             {
@@ -166,7 +125,7 @@ fn main()
 
                     strip_crlf(&mut input);
 
-                    if let Some(json) = parse_json(input.as_str())
+                    if let Some(json) = json_stuff::parse_json(input.as_str())
                     {
                         return users.handle_request(json, connection_id);
                     }

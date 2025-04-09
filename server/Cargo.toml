@@ -7,5 +7,6 @@ edition = "2024"
 [dependencies]
 chrono = "0.4.40"
 clap = { version = "4.5.35", features = ["derive"] }
-json = "0.12.4"
 libc = "0.2.171"
+json = "0.12.4"
+json_stuff = { path = "../json_stuff" }
