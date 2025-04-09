@@ -24,7 +24,7 @@ pub mod log
 	macro_rules! log_it
 	{
 		( $($arg: expr),* $(,)* ) => {{
-			println!("{} {}: {}", Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), $($arg, )*);
+			println!("{} {}: {}", chrono::Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), $($arg, )*);
 		}};
 	}
 }
