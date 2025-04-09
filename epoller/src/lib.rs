@@ -251,3 +251,49 @@ where Func: FnMut(RawFd, Vec<u8>) -> (RawFd, String)
 		}
 	}
 }
+
+// ************************************************************************************************
+// ********************************************* TESTS ********************************************
+// ************************************************************************************************
+
+#[cfg(test)]
+mod tests
+{
+    use crate::{get_socket_mode, SocketMode};
+
+	#[test]
+	fn test_socket_mode_recv()
+	{
+		let event = libc::epoll_event
+		{
+			events: (libc::EPOLLET | libc::EPOLLIN) as u32,
+			u64: 42,
+		};
+
+		assert!(SocketMode::Recv == get_socket_mode(event));
+	}
+	
+	#[test]
+	fn test_socket_mode_send()
+	{
+		let event = libc::epoll_event
+		{
+			events: (libc::EPOLLET | libc::EPOLLOUT) as u32,
+			u64: 42,
+		};
+
+		assert!(SocketMode::Send == get_socket_mode(event));
+	}
+
+	#[test]
+	fn test_socket_mode_ignore()
+	{
+		let event = libc::epoll_event
+		{
+			events: (libc::EPOLLET) as u32,
+			u64: 42,
+		};
+
+		assert!(SocketMode::Ignore == get_socket_mode(event));
+	}
+}
