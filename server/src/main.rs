@@ -1,6 +1,7 @@
 
 use json_stuff::json_stuff;
 use common::log_it;
+use common::util;
 use epoller::Epoller;
 use clap::Parser;
 use json::JsonValue;
@@ -16,17 +17,6 @@ struct Args
     port: u16,
 }
 
-fn strip_crlf(input: &mut String)
-{
-    if input.ends_with('\n') || input.ends_with('\r')
-    {
-        input.pop();
-        if input.ends_with('\n')
-        {
-            input.pop();
-        }
-    }
-}
 
 struct UserConnections
 {
@@ -123,7 +113,7 @@ fn main()
                 {
                     log_it!("length", input.len());
 
-                    strip_crlf(&mut input);
+                    util::strip_crlf(&mut input);
 
                     if let Some(json) = json_stuff::parse_json(input.as_str())
                     {

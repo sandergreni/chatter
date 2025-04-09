@@ -16,6 +16,18 @@ pub mod util
 			}
 		}};
 	}
+
+	pub fn strip_crlf(input: &mut String)
+	{
+		if input.ends_with('\n') || input.ends_with('\r')
+		{
+			input.pop();
+			if input.ends_with('\n') || input.ends_with('\r')
+			{
+				input.pop();
+			}
+		}
+	}
 }
 
 pub mod log
@@ -26,5 +38,51 @@ pub mod log
 		( $($arg: expr),* $(,)* ) => {{
 			println!("{} {}: {}", chrono::Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), $($arg, )*);
 		}};
+	}
+}
+
+#[cfg(test)]
+mod tests
+{
+    use crate::util::strip_crlf;
+
+	#[test]
+	fn test_no_crlf()
+	{
+		let str = "test".to_owned();
+		let mut copy = str.clone();
+		strip_crlf(&mut copy);
+
+		assert_eq!(str, copy);
+	}
+	
+	#[test]
+	fn test_with_cr()
+	{
+		let str = "test".to_owned();
+		let mut copy = "test\r".to_owned();
+		strip_crlf(&mut copy);
+
+		assert_eq!(str, copy);
+	}
+
+	#[test]
+	fn test_with_lf()
+	{
+		let str = "test".to_owned();
+		let mut copy = "test\n".to_owned();
+		strip_crlf(&mut copy);
+
+		assert_eq!(str, copy);
+	}
+	
+	#[test]
+	fn test_with_crlf()
+	{
+		let str = "test".to_owned();
+		let mut copy = "test\r\n".to_owned();
+		strip_crlf(&mut copy);
+
+		assert_eq!(str, copy);
 	}
 }
