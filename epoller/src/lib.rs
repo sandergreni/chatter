@@ -109,11 +109,6 @@ where Func: FnMut(RawFd, Vec<u8>) -> (RawFd, String)
 {
 	pub fn new(port: u16, cb: Func) -> Self
 	{
-		if port > u16::MAX
-		{
-			panic!("Invalid port number");
-		}
-
 		let fd: RawFd = match syscall!(epoll_create1(libc::EPOLL_CLOEXEC))
 		{
 			Ok(res) => res,
@@ -151,7 +146,7 @@ where Func: FnMut(RawFd, Vec<u8>) -> (RawFd, String)
 		let num_events = match syscall!(
 			epoll_wait(
 				self.epoll_fd,
-				events.as_mut_ptr() as *mut libc::epoll_event,
+				events.as_mut_ptr(),
 				events.capacity().try_into().unwrap(),
 				-1 as libc::c_int))
 		{

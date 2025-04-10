@@ -45,7 +45,7 @@ pub mod json_stuff
     pub fn get_login_response(users: &HashMap<String, RawFd>) -> Result<String, json::JsonError>
     {
         let mut users_arr = json::JsonValue::new_array();
-        for (username, _fd) in users
+        for username in users.keys()
         {
             users_arr.push(username.as_str())?;
         }
