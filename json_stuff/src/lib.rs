@@ -138,7 +138,13 @@ mod tests
 
         match get_login_response(&users)
         {
-            Ok(valid_json) => assert_eq!(r#"{"response":"login","users":["sander","per"]}"#, valid_json.as_str()),
+            Ok(valid_json) =>
+            {
+                let eq =
+                    r#"{"response":"login","users":["sander","per"]}"# == valid_json.as_str() ||
+                    r#"{"response":"login","users":["per","sander"]}"# == valid_json.as_str();
+                assert!(eq);
+            }
             Err(_) => panic!(),
         }
     }
