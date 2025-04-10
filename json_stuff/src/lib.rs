@@ -97,7 +97,7 @@ mod tests
         match get_username(&valid_json.unwrap(), "user")
         {
             Ok(username) => assert_eq!(username, "sander"),
-            Err(_) => assert!(false),
+            Err(_) => panic!(),
         }
     }
 
@@ -111,7 +111,7 @@ mod tests
         match get_username(&valid_json.unwrap(), "recipient")
         {
             Ok(username) => assert_eq!(username, "sander"),
-            Err(_) => assert!(false),
+            Err(_) => panic!(),
         }
     }
     
@@ -125,7 +125,7 @@ mod tests
         match get_request_code(&valid_json.unwrap())
         {
             Ok(req_code) => assert_eq!(req_code, "message"),
-            Err(_) => assert!(false),
+            Err(_) => panic!(),
         }
     }
 
@@ -139,7 +139,7 @@ mod tests
         match get_login_response(&users)
         {
             Ok(valid_json) => assert_eq!(r#"{"response":"login","users":["sander","per"]}"#, valid_json.as_str()),
-            Err(_) => assert!(false)
+            Err(_) => panic!(),
         }
     }
 }
