@@ -7,9 +7,16 @@ on:
     branches: [ "master" ]
 
 env:
+  RUSTFLAGS: "-Dwarnings"
   CARGO_TERM_COLOR: always
 
 jobs:
+  clippy_check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run clippy
+      run: cargo clippy --all-targets --all-features
   build:
     runs-on: ubuntu-latest
     strategy:
