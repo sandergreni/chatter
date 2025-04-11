@@ -1,5 +1,5 @@
 [package]
-name = "cs_server"
+name = "chatter_server"
 version = "0.1.0"
 authors = ["Sander Greni <sander.greni@gmail.com>"]
 edition = "2024"

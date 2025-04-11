@@ -95,6 +95,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
+name = "chatter_client"
+version = "0.1.0"
+dependencies = [
+ "clap",
+]
+
+[[package]]
+name = "chatter_server"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "clap",
+ "common",
+ "epoller",
+ "json",
+ "json_stuff",
+]
+
+[[package]]
 name = "chrono"
 version = "0.4.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -149,13 +168,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f46ad14479a25103f283c0f10005961cf086d8dc42205bb44c46ac563475dca6"
 
 [[package]]
-name = "client"
-version = "0.1.0"
-dependencies = [
- "clap",
-]
-
-[[package]]
 name = "colorchoice"
 version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -170,18 +182,6 @@ name = "core-foundation-sys"
 version = "0.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
-
-[[package]]
-name = "cs_server"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "clap",
- "common",
- "epoller",
- "json",
- "json_stuff",
-]
 
 [[package]]
 name = "epoller"
