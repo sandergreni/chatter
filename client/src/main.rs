@@ -1,5 +1,5 @@
 
-use std::{io::{BufRead, BufReader, Write}, net::TcpStream};
+use std::{io::{Read, Write}, net::TcpStream};
 
 use clap::Parser;
 
@@ -14,6 +14,38 @@ struct Args
     username: String,
 }
 
+fn convert(raw_buffer: [u8; 4096]) -> String
+{
+    match String::from_utf8(raw_buffer.to_vec())
+    {
+        Ok(s) => return s,
+        Err(error) => return format!("Error while converting from utf8: {}", error)
+    }
+}
+
+fn read(stream: &mut TcpStream) -> String
+{
+    let mut raw_buffer: [u8; 4096] = [0u8; 4096];
+    match stream.read(&mut raw_buffer)
+    {
+        Ok(bytes_read) =>
+        {
+            if bytes_read > 0
+            {
+                return convert(raw_buffer);
+            }
+            else
+            {
+                return format!("{} bytes read from socket", bytes_read);
+            }
+        },
+        Err(error) =>
+        {
+            return format!("Unable to read from socket: {}", error);
+        }
+    }
+}
+
 fn client_main(mut stream: TcpStream, args: Args)
 {
     let login_json = r#"{"request":"login","user":{"username":""#.to_owned() + &args.username + r#""}}"#;
@@ -22,15 +54,7 @@ fn client_main(mut stream: TcpStream, args: Args)
         println!("Unable to write to socket: {error}");
     }
 
-    let buf_reader = BufReader::new(&stream);
-    for line in buf_reader.lines()
-    {
-        match line
-        {
-            Ok(str) => println!("{str}"),
-            Err(error) => println!("Error while reading socket: {error}")
-        }
-    }
+    println!("{}", read(& mut stream));
 }
 
 fn main()

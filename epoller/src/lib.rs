@@ -227,6 +227,7 @@ where Func: FnMut(RawFd, Vec<u8>) -> (RawFd, String)
 									if let Some(buffer) = self.handle_read(conn_fd)
 									{
 										let (write_fd, msg) = (self.callback)(conn_fd, buffer);
+										log_it!("send", msg);
 										self.handle_write(write_fd, msg);
 									}
 								},
